@@ -16,13 +16,21 @@ type Moeda = {
   tipoMoeda: string;
 };
 
+const REAL:Moeda = {
+  simbolo:'BRL',
+  nomeFormatado:'Real Brasileiro',
+  tipoMoeda:'Nacional',
+}
+
 export default function Index() {
   const [input, setInput] = useState<string>('');
   const [result, setResult] = useState<string>('');
 
   const [moedas, setMoedas] = useState<Moeda[]>([]);
-  const [selectedMoeda, setSelectedMoeda] = useState<Moeda | null>(null);
-  const [selectedMoeda2, setSelectedMoeda2] = useState<Moeda | null>(null);
+  const [selectedMoeda, setSelectedMoeda] = useState<Moeda>(REAL);
+  const [selectedMoeda2, setSelectedMoeda2] = useState<Moeda>(REAL);
+
+  const [resultadoConvertido, setResultadoConvertido] = useState<string>('');
 
   useEffect(() => {
     try{
@@ -46,6 +54,25 @@ export default function Index() {
     loadMoedas();
   }, []);
 
+  useEffect(() => {
+    async function calcularConversao() {
+      if (!selectedMoeda || !selectedMoeda2 || !result){
+        setResultadoConvertido('');
+        return;
+      }
+
+      const valor = await converterEntreMoedas(
+        selectedMoeda.simbolo,
+        selectedMoeda2.simbolo,
+        Number(result)
+      );
+
+      setResultadoConvertido(String(valor));
+    }
+
+    calcularConversao();
+  }, [selectedMoeda, selectedMoeda2, result]);
+
   const handlePress = (btn:string) => {
     if (btn === 'C') {
       setInput('');
@@ -63,7 +90,52 @@ export default function Index() {
     const response = await fetch(url);
     const data = await response.json();
 
-    return data.value;
+    return [REAL, ...data.value];
+  }
+
+  async function getCotacaoHoje(simbolo: string) {
+  
+    if(simbolo === 'BRL') return 1;
+
+    const hoje = new Date();
+    const data = hoje.toLocaleDateString('en-US'); // MM/DD/YYYY
+
+    const [mes, dia, ano] = data.split('/');
+    const dataBCB = `${mes}-${dia}-${ano}`;
+
+    const url = `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/` +
+              `CotacaoMoedaDia(moeda='${simbolo}',dataCotacao='${dataBCB}')?$format=json`;
+
+    const response = await fetch(url);
+    const json = await response.json();
+
+    if(!json.value || json.value.length === 0){
+      return null;
+    }
+    const utilmaCotacao = json.value[json.value.length - 1];
+
+    // A PTAX usa "cotacaoCompra" e "cotacaoVenda"
+    return utilmaCotacao.cotacaoVenda;
+  }
+
+
+  async function converterEntreMoedas(origem:string, destino:string, valor: number) {
+    const cotacaoOrigem = await getCotacaoHoje(origem);
+    const cotacaoDestino = await getCotacaoHoje(destino);
+
+    if(cotacaoOrigem == null || !cotacaoDestino == null ) return null;
+
+    // Se origem é BRL, a cotação é 1
+    // Se destino é BRL, a cotação é 1
+    const cOrigem = origem === 'BRL' ? 1 : cotacaoOrigem;
+    const cDestino = destino === 'BRL' ? 1 : cotacaoDestino;
+
+    // Converte origem em BRL
+    const emBRL = valor * cOrigem;
+
+    // Converte BRL em destino
+    console.log(emBRL / cotacaoDestino)
+    return emBRL / cDestino;
   }
 
   return(
@@ -139,6 +211,8 @@ export default function Index() {
           <ScrollView style={{maxHeight: 160, flex: 1}}>
             <View style={styles.resultContainer}>
               <Text style={styles.resultText}>{result + ' '}</Text>
+              
+              <Text style={styles.resultText}>{resultadoConvertido + ' '}</Text>
             </View>
           </ScrollView>
         </View>
