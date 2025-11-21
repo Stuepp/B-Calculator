@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, ScrollView, StyleSheet, FlatList } from 'react-native';
 
 const buttons = [
   ['C', '(', ')', '%'], // First row of buttons
@@ -10,9 +10,19 @@ const buttons = [
   ['='], // Sixth row with only the equals button
 ];
 
+type Moeda = {
+  simbolo: string;
+  nomeFormatado: string;
+  tipoMoeda: string;
+};
+
 export default function Index() {
   const [input, setInput] = useState<string>('');
   const [result, setResult] = useState<string>('');
+
+  const [moedas, setMoedas] = useState<Moeda[]>([]);
+  const [selectedMoeda, setSelectedMoeda] = useState<Moeda | null>(null);
+  const [selectedMoeda2, setSelectedMoeda2] = useState<Moeda | null>(null);
 
   useEffect(() => {
     try{
@@ -28,6 +38,14 @@ export default function Index() {
     }
   }, [input])
 
+  useEffect(() => {
+    async function loadMoedas() {
+      const resultado = await fetchMoedas();
+      setMoedas(resultado);
+    }
+    loadMoedas();
+  }, []);
+
   const handlePress = (btn:string) => {
     if (btn === 'C') {
       setInput('');
@@ -40,19 +58,91 @@ export default function Index() {
     }
   };
 
+  async function fetchMoedas() {
+    const url = 'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$format=json'
+    const response = await fetch(url);
+    const data = await response.json();
+
+    return data.value;
+  }
+
   return(
     <View style={styles.container}>
       {/* Display for input and result */}
-      <ScrollView style={{maxHeight: 160, flex: 1}}>
-        <View style={styles.resultContainer}>
-          <Text style={styles.inputText}>{input + ' '}</Text>
+      <View style={{flex:1, flexDirection:'row'}}>
+        <View style={{flex:1}}>
+          {selectedMoeda && (
+            <Text style={{color: '#fff', fontSize: 20, marginBottom: 10}}>
+              {selectedMoeda.simbolo} - {selectedMoeda.nomeFormatado}
+            </Text>
+          )}
+          <FlatList
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingVertical: 5, alignItems: 'center' }}
+            data={moedas}
+            keyExtractor={(item) => item.simbolo}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => setSelectedMoeda(item)}
+                style={{
+                  padding: 10,
+                  backgroundColor: selectedMoeda?.simbolo === item.simbolo ? '#1fd660' : '#222',
+                  marginVertical: 4,
+                  borderRadius: 6,
+                }}
+              >
+                <Text style={{color: '#fff'}}>{item.simbolo}</Text>
+              </TouchableOpacity>
+            )}
+          />
+          <ScrollView style={{maxHeight: 160, flex: 1}}>
+            <View style={styles.resultContainer}>
+              <Text style={styles.inputText}>{input + ' '}</Text>
+            </View>
+          </ScrollView>
+          <ScrollView style={{maxHeight: 160, flex: 1}}>
+            <View style={styles.resultContainer}>
+              <Text style={styles.resultText}>{result + ' '}</Text>
+            </View>
+          </ScrollView>
         </View>
-      </ScrollView>
-      <ScrollView style={{maxHeight: 160, flex: 1}}>
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultText}>{result + ' '}</Text>
+        <View style={{flex:1}}>
+          {selectedMoeda2 && (
+            <Text style={{color: '#fff', fontSize: 20, marginBottom: 10}}>
+              {selectedMoeda2.simbolo} - {selectedMoeda2.nomeFormatado}
+            </Text>
+          )}
+          <FlatList
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingVertical: 5, alignItems: 'center' }}
+            data={moedas}
+            keyExtractor={(item) => item.simbolo}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => setSelectedMoeda2(item)}
+                style={{
+                  padding: 10,
+                  backgroundColor: selectedMoeda2?.simbolo === item.simbolo ? '#1fd660' : '#222',
+                  marginVertical: 4,
+                  borderRadius: 6,
+                }}
+              >
+                <Text style={{color: '#fff'}}>{item.simbolo}</Text>
+              </TouchableOpacity>
+            )}
+          />
+          <ScrollView style={{maxHeight: 160, flex: 1}}>
+            <View style={styles.resultContainer}>
+              <Text style={styles.inputText}>{input + ' '}</Text>
+            </View>
+          </ScrollView>
+          <ScrollView style={{maxHeight: 160, flex: 1}}>
+            <View style={styles.resultContainer}>
+              <Text style={styles.resultText}>{result + ' '}</Text>
+            </View>
+          </ScrollView>
         </View>
-      </ScrollView>
+      </View>
       {/* Calculator buttons */}
       <View style={styles.buttonContainer}>
         {buttons.map((row, rowIndex) => (
@@ -87,7 +177,7 @@ const styles = StyleSheet.create({
   },
   resultContainer: {
     padding: 50,
-    maxHeight: 160,
+    //maxHeight: 160,
     alignItems: 'flex-end',
   },
   inputText: {
