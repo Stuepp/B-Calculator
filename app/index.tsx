@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 
 const buttons = [
   ['C', '(', ')', '%'], // First row of buttons
@@ -43,10 +43,16 @@ export default function Index() {
   return(
     <View style={styles.container}>
       {/* Display for input and result */}
-      <View style={styles.resultContainer}>
-        <Text style={styles.inputText}>{input + ' '}</Text>
-        <Text style={styles.resultText}>{result + ' '}</Text>
-      </View>
+      <ScrollView style={{maxHeight: 160, flex: 1}}>
+        <View style={styles.resultContainer}>
+          <Text style={styles.inputText}>{input + ' '}</Text>
+        </View>
+      </ScrollView>
+      <ScrollView style={{maxHeight: 160, flex: 1}}>
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>{result + ' '}</Text>
+        </View>
+      </ScrollView>
       {/* Calculator buttons */}
       <View style={styles.buttonContainer}>
         {buttons.map((row, rowIndex) => (
@@ -67,7 +73,6 @@ export default function Index() {
             ))}
           </View>
         ))
-
         }
       </View>
     </View>
@@ -78,10 +83,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   resultContainer: {
     padding: 50,
+    maxHeight: 160,
     alignItems: 'flex-end',
   },
   inputText: {
