@@ -106,16 +106,16 @@ export default function Index() {
     if(simbolo === 'BRL') return 1;
 
     const hoje = new Date();
-    const dayOfWeek = hoje.getDay();
-    const data = hoje.toLocaleDateString('en-US'); // MM/DD/YYYY
-
-    let [mes, dia, ano] = data.split('/');
+    const dayOfWeek = hoje.getDay();    
     
     if (dayOfWeek === 6){ // Sataturday
-      dia = (Number(dia)-1).toString();
+      hoje.setDate(hoje.getDate() -1) // goes back one day
     }else if (dayOfWeek === 0){ // Sunday
-      dia = (Number(dia)-2).toString();
+      hoje.setDate(hoje.getDate() -2) // goes back two days
     }
+
+    const data = hoje.toLocaleDateString('en-US'); // MM/DD/YYYY
+    let [mes, dia, ano] = data.split('/');
 
     const dataBCB = `${mes}-${dia}-${ano}`;
 
