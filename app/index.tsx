@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, ScrollView, StyleSheet, FlatList } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const buttons = [
   ['C', '(', ')', '%'], // First row of buttons
@@ -8,7 +9,7 @@ const buttons = [
   ['4', '5', '6', '*'], // Third row of buttons
   ['1', '2', '3', '-'], // Fourth row of buttons
   ['+/-', '0', '.', '+'], // Fifth row of buttons
-  ['='], // Sixth row with only the equals button
+  ['=', { icon: 'backspace' }], // Sixth row with only the equals button
 ];
 
 type Moeda = {
@@ -74,18 +75,21 @@ export default function Index() {
     calcularConversao();
   }, [selectedMoeda, selectedMoeda2, result]);
 
-  const handlePress = (btn:string) => {
-    if (btn === 'C') {
-      setInput('');
-      setResult('');
-    } else if (btn === '+/-'){
-      if(input.startsWith('-')) setInput(input.substring(1));
-      else setInput('-' + input)
-    } else if (btn === '='){
-      setInput(result);
-    }
-     else {
-      setInput((prev) => prev + btn);
+  const handlePress = (btn:any) => {
+    if (typeof btn === 'string'){
+      if (btn === 'C') {
+        setInput('');
+        setResult('');
+      } else if (btn === '+/-'){
+        if(input.startsWith('-')) setInput(input.substring(1));
+        else setInput('-' + input)
+      } else if (btn === '='){
+        setInput(result);
+      } else {
+        setInput((prev) => prev + btn);
+      }
+    } else if (typeof btn === 'object' && btn.icon === 'backspace'){
+      setInput(prev => prev.slice(0, -1));
     }
   };
 
@@ -246,9 +250,13 @@ export default function Index() {
                 ]}
                 onPress={() => handlePress(btn)}
               >
-                <Text style={[styles.buttonText, btn === '=' && {fontSize:28}]}>
-                  {btn}
-                </Text>
+                {typeof btn === 'string' ? (
+                  <Text style={[styles.buttonText, btn === '=' && {fontSize:28}]}>
+                    {btn}
+                  </Text>
+                ) : (
+                  <MaterialIcons name={btn.icon as any} size={28} color="white" />
+                )}
               </TouchableOpacity>
             ))}
           </View>
@@ -281,7 +289,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 30,
   },
   row: {
     flexDirection: 'row',
@@ -299,7 +307,7 @@ const styles = StyleSheet.create({
   },
   equalsButton: {
     backgroundColor: '#1fd660',
-    flex: 4,
+    flex: 3,
   },
   buttonText:{
     fontSize: 24,
