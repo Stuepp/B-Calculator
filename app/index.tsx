@@ -98,9 +98,17 @@ export default function Index() {
     if(simbolo === 'BRL') return 1;
 
     const hoje = new Date();
+    const dayOfWeek = hoje.getDay();
     const data = hoje.toLocaleDateString('en-US'); // MM/DD/YYYY
 
-    const [mes, dia, ano] = data.split('/');
+    let [mes, dia, ano] = data.split('/');
+    
+    if (dayOfWeek === 6 || dayOfWeek === 0){ // Sataturday
+      dia = (Number(dia)-1).toString();
+    }else if (dayOfWeek === 0){
+      dia = (Number(dia)-2).toString();
+    }
+
     const dataBCB = `${mes}-${dia}-${ano}`;
 
     const url = `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/` +
@@ -205,13 +213,6 @@ export default function Index() {
           />
           <ScrollView style={{maxHeight: 160, flex: 1}}>
             <View style={styles.resultContainer}>
-              <Text style={styles.inputText}>{input + ' '}</Text>
-            </View>
-          </ScrollView>
-          <ScrollView style={{maxHeight: 160, flex: 1}}>
-            <View style={styles.resultContainer}>
-              <Text style={styles.resultText}>{result + ' '}</Text>
-              
               <Text style={styles.resultText}>{resultadoConvertido + ' '}</Text>
             </View>
           </ScrollView>
