@@ -81,7 +81,10 @@ export default function Index() {
     } else if (btn === '+/-'){
       if(input.startsWith('-')) setInput(input.substring(1));
       else setInput('-' + input)
-    } else {
+    } else if (btn === '='){
+      setInput(result);
+    }
+     else {
       setInput((prev) => prev + btn);
     }
   };
@@ -151,9 +154,9 @@ export default function Index() {
     value: m.simbolo
   }))
 
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState('BRL'); // Keep BRL as default currency
   const [isFocus, setIsFocus] = useState(false);
-  const [value2, setValue2] = useState(null);
+  const [value2, setValue2] = useState('BRL'); // Keep BRL as default currency
   const [isFocus2, setIsFocus2] = useState(false);
 
   return(
@@ -172,7 +175,7 @@ export default function Index() {
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={!isFocus ? 'Select item' : '...'}
+            placeholder={!isFocus ? 'Select currency' : '...'}
             searchPlaceholder="Search..."
             value={value}
             onFocus={() => setIsFocus(true)}
@@ -209,7 +212,7 @@ export default function Index() {
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={!isFocus ? 'Select item' : '...'}
+            placeholder={!isFocus ? 'Select currency' : '...'}
             searchPlaceholder="Search..."
             value={value2}
             onFocus={() => setIsFocus2(true)}
