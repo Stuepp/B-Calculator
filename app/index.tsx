@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, ScrollView, StyleSheet, FlatList } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const buttons = [
   ['C', '(', ')', '%'], // First row of buttons
@@ -103,9 +104,9 @@ export default function Index() {
 
     let [mes, dia, ano] = data.split('/');
     
-    if (dayOfWeek === 6 || dayOfWeek === 0){ // Sataturday
+    if (dayOfWeek === 6){ // Sataturday
       dia = (Number(dia)-1).toString();
-    }else if (dayOfWeek === 0){
+    }else if (dayOfWeek === 0){ // Sunday
       dia = (Number(dia)-2).toString();
     }
 
@@ -142,38 +143,48 @@ export default function Index() {
     const emBRL = valor * cOrigem;
 
     // Converte BRL em destino
-    console.log(emBRL / cotacaoDestino)
     return emBRL / cDestino;
   }
+
+  const moedasDropDown = moedas.map((m) => ({
+    label: `${m.simbolo} - ${m.nomeFormatado}`,
+    value: m.simbolo
+  }))
+
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+  const [value2, setValue2] = useState(null);
+  const [isFocus2, setIsFocus2] = useState(false);
 
   return(
     <View style={styles.container}>
       {/* Display for input and result */}
       <View style={{flex:1, flexDirection:'row'}}>
         <View style={{flex:1}}>
-          {selectedMoeda && (
-            <Text style={{color: '#fff', fontSize: 20, marginBottom: 10}}>
-              {selectedMoeda.simbolo} - {selectedMoeda.nomeFormatado}
-            </Text>
-          )}
-          <FlatList
-            style={{ flex: 1 }}
-            contentContainerStyle={{ paddingVertical: 5, alignItems: 'center' }}
-            data={moedas}
-            keyExtractor={(item) => item.simbolo}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() => setSelectedMoeda(item)}
-                style={{
-                  padding: 10,
-                  backgroundColor: selectedMoeda?.simbolo === item.simbolo ? '#1fd660' : '#222',
-                  marginVertical: 4,
-                  borderRadius: 6,
-                }}
-              >
-                <Text style={{color: '#fff'}}>{item.simbolo}</Text>
-              </TouchableOpacity>
-            )}
+          <Dropdown
+            style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            data={moedasDropDown}
+            search
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!isFocus ? 'Select item' : '...'}
+            searchPlaceholder="Search..."
+            value={value}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onChange={item => {
+              setValue(item.value);
+              setIsFocus(false);
+              const moedaSelecionada = moedas.find(m => m.simbolo === item.value);
+              if (moedaSelecionada) {
+                setSelectedMoeda(moedaSelecionada);
+              }
+            }}
           />
           <ScrollView style={{maxHeight: 160, flex: 1}}>
             <View style={styles.resultContainer}>
@@ -187,29 +198,30 @@ export default function Index() {
           </ScrollView>
         </View>
         <View style={{flex:1}}>
-          {selectedMoeda2 && (
-            <Text style={{color: '#fff', fontSize: 20, marginBottom: 10}}>
-              {selectedMoeda2.simbolo} - {selectedMoeda2.nomeFormatado}
-            </Text>
-          )}
-          <FlatList
-            style={{ flex: 1 }}
-            contentContainerStyle={{ paddingVertical: 5, alignItems: 'center' }}
-            data={moedas}
-            keyExtractor={(item) => item.simbolo}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() => setSelectedMoeda2(item)}
-                style={{
-                  padding: 10,
-                  backgroundColor: selectedMoeda2?.simbolo === item.simbolo ? '#1fd660' : '#222',
-                  marginVertical: 4,
-                  borderRadius: 6,
-                }}
-              >
-                <Text style={{color: '#fff'}}>{item.simbolo}</Text>
-              </TouchableOpacity>
-            )}
+          <Dropdown
+            style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            data={moedasDropDown}
+            search
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!isFocus ? 'Select item' : '...'}
+            searchPlaceholder="Search..."
+            value={value2}
+            onFocus={() => setIsFocus2(true)}
+            onBlur={() => setIsFocus2(false)}
+            onChange={item => {
+              setValue2(item.value);
+              setIsFocus2(false);
+              const moedaSelecionada2 = moedas.find(m => m.simbolo === item.value);
+              if (moedaSelecionada2) {
+                setSelectedMoeda2(moedaSelecionada2);
+              }
+            }}
           />
           <ScrollView style={{maxHeight: 160, flex: 1}}>
             <View style={styles.resultContainer}>
@@ -249,9 +261,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     justifyContent: 'flex-start',
+    paddingTop: 40,
   },
   resultContainer: {
-    padding: 50,
     //maxHeight: 160,
     alignItems: 'flex-end',
   },
@@ -289,5 +301,29 @@ const styles = StyleSheet.create({
   buttonText:{
     fontSize: 24,
     color: '#fff',
-  }
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    marginHorizontal: 8,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
 });
