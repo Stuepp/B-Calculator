@@ -1,6 +1,16 @@
-# Welcome to your Expo app 👋
+# Welcome to B-Calculator app 👋
+
+Hi, I made this simple app to help a bit my father who deals with sales and must go through the Central Bank to get the value of the productus from their "original" coin, and then convert it to the one we use in the county + to know how much is going to make with a certain transaction.
+
+I was going to publish this app on the Play Store, but kinda short on money to create my Google Developer Account...
+
+I do plan on improving this app just a bit more, but is going to remain as a simple calculator.
+
+! It is important to know that the value of the money, besides BRL, is the price of SALE, all the conversion goes to BRL, usign BRL as base.
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+
+You can clone this repos through the link (https://github.com/Stuepp/B-Calculator.git).
 
 ## Get started
 
@@ -25,26 +35,13 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## Get the App in you cellphone
 
-When you're ready, run:
+If the URLs don't work, feel free to contact me, or publish a Issue here on Github.
+Also if you have any recommendation of App Store, free of charge to publish (and to create a dev account) the App also feel free to tell me about it.
 
-```bash
-npm run reset-project
-```
+### Android
+   https://expo.dev/artifacts/eas/4tEHPX3at65wzPgYiJwyb1.aab
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### iOS
+   I do not have money for it.
